@@ -17,5 +17,19 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
+  defaultNetwork: "kovan",
+  networks: {
+    hardhat: {
+      forking: {
+        url: process.env.WEB3_INFURA_PROJECT_ID
+      }
+    },
+    kovan: {
+      url: process.env.WEB3_INFURA_PROJECT_ID,
+      accounts: {
+        privateKey: process.env.PRIVATE_KEY
+      }
+    }
+  },
   solidity: "0.8.4",
 };
