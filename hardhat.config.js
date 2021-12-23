@@ -21,11 +21,11 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        url: process.env.WEB3_INFURA_PROJECT_ID
+        url: process.env.MAINNET_HTTP_URL
       }
     },
     kovan: {
-      url: process.env.WEB3_INFURA_PROJECT_ID,
+      url: process.env.KOVAN_HTTP_URL,
       accounts: {
         privateKey: process.env.PRIVATE_KEY
       }
