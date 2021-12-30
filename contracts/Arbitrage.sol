@@ -183,5 +183,5 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
     //     dai.transfer(owner, dai.balanceOf(address(this)));
     // }
 
-    receive() external payable {}
+    //receive() external payable {}
 }
