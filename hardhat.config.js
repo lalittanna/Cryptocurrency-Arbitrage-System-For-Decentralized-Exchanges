@@ -1,5 +1,6 @@
 require("@nomiclabs/hardhat-waffle");
 require('dotenv').config();
+require("@nomiclabs/hardhat-etherscan");
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -37,6 +38,9 @@ module.exports = {
       DYDX_SOLO: "0x4EC3570cADaAEE08Ae384779B0f3A45EF85289DE",
       WETH: "0xd0a1e359811322d97991e03f863a0c30c2cf029c"
     }
+  },
+  etherscan: {
+      apiKey: "12UI5XK27FBJF9NC3EW3YT1P4778IQ6KKQ"
   },
   solidity: "0.8.4",
 };
