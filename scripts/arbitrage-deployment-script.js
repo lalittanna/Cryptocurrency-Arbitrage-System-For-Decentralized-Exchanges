@@ -3,8 +3,10 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-const { ethers } = require("hardhat");
+const { ethers, network, hardhatArguments } = require("hardhat");
 const hre = require("hardhat");
+const { defaultNetwork, networks } = require("../hardhat.config");
+const hardhatConfig = require("../hardhat.config");
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -21,8 +23,11 @@ async function main() {
   // We get the contract to deploy
   const ArbitrageContract = await hre.ethers.getContractFactory("Arbitrage");
 
-  // Add addresses of contracts according to the network
-  const arbitrage = await ArbitrageContract.deploy("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506", "0x4EC3570cADaAEE08Ae384779B0f3A45EF85289DE", "0xd0a1e359811322d97991e03f863a0c30c2cf029c");
+  //Add addresses of contracts according to the network
+  const arbitrage = await ArbitrageContract.deploy(network.config.UNISWAPV2_ROUTER02, 
+    network.config.SUSHISWAP_ROUTER, 
+    network.config.DYDX_SOLO, 
+    network.config.WETH);
 
   await arbitrage.deployed();
 
