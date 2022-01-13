@@ -14,24 +14,17 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
     //0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506
     IUniswapV2Router02 sushiswap;
     //0x4EC3570cADaAEE08Ae384779B0f3A45EF85289DE
-    address SOLO;
-
-    //0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa
-    IERC20 dai;
-    //0xd0a1e359811322d97991e03f863a0c30c2cf029c
-    IERC20 weth;
+    ISoloMargin SOLO;
 
     constructor(
         address uniswapAddress,
         address sushiswapAddress,
-        address dYdXSoloAddress,
-        address wethAddress
+        address dYdXSoloAddress
     ) public {
         owner = payable(msg.sender);
         uniswap = IUniswapV2Router02(uniswapAddress);
         sushiswap = IUniswapV2Router02(sushiswapAddress);
-        SOLO = dYdXSoloAddress;
-        weth = IERC20(wethAddress);
+        SOLO = ISoloMargin(dYdXSoloAddress);
     }
 
     struct MyCustomData {
@@ -47,7 +40,7 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
         Account.Info memory account,
         bytes memory data
     ) public override {
-        require(msg.sender == SOLO, "!solo");
+        require(msg.sender == address(SOLO), "!solo");
         require(sender == address(this), "!this contract");
 
         MyCustomData memory myCustomData = abi.decode(data, (MyCustomData));
@@ -114,7 +107,7 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
         uint256 _amount,
         uint8 _direction
     ) external {
-        ISoloMargin solo = ISoloMargin(SOLO);
+        require(msg.sender == address(this), "!owner");
 
         // Get marketId from token address
         /*
@@ -123,11 +116,11 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
     2	USDC
     3	DAI
     */
-        uint256 marketId = _getMarketIdFromTokenAddress(SOLO, _token1);
+        uint256 marketId = _getMarketIdFromTokenAddress(address(SOLO), _token1);
 
         // Calculate repay amount (_amount + (2 wei))
         uint256 repayAmount = _getRepaymentAmountInternal(_amount);
-        IERC20(_token1).approve(SOLO, repayAmount);
+        IERC20(_token1).approve(address(SOLO), repayAmount);
 
         /*
     1. Withdraw
@@ -153,35 +146,6 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
         Account.Info[] memory accountInfos = new Account.Info[](1);
         accountInfos[0] = _getAccountInfo();
 
-        solo.operate(accountInfos, operations);
+        SOLO.operate(accountInfos, operations);
     }
-
-    function wethReturn() public {
-        uint256 balanceWeth = weth.balanceOf(address(this));
-        weth.transfer(owner, balanceWeth);
-    }
-
-    function wethValue() public view returns (uint256 value) {
-        return weth.balanceOf(address(this));
-    }
-
-    function checkBalance() public view returns (uint256 value) {
-        return address(this).balance;
-    }
-
-    function getEthback() public payable {
-        uint256 balanceEth = address(this).balance;
-        owner.transfer(balanceEth);
-    }
-
-    // function daiValue() public view returns (uint256 value) {
-    //     uint256 balanceDai = dai.balanceOf(address(this));
-    //     return balanceDai;
-    // }
-
-    // function getDai() public payable {
-    //     dai.transfer(owner, dai.balanceOf(address(this)));
-    // }
-
-    //receive() external payable {}
 }
