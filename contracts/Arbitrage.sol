@@ -107,7 +107,7 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
         uint256 _amount,
         uint8 _direction
     ) external {
-        require(msg.sender == address(this), "!owner");
+        require(msg.sender == owner, "!owner");
 
         // Get marketId from token address
         /*
