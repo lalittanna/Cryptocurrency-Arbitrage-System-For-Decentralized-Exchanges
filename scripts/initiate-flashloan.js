@@ -27,7 +27,7 @@ async function main() {
 
   const wethContract = await hre.ethers.getContractAt(
     "IERC20",
-    "0xd0a1e359811322d97991e03f863a0c30c2cf029c"
+    network.config.WETH
   );
 
   await wethContract.transfer(arbitrage.address, 1000000000000000);
@@ -35,8 +35,8 @@ async function main() {
   console.log(await wethContract.balanceOf(arbitrage.address));
 
   await arbitrage.initiateFlashLoan(
-    "0xd0a1e359811322d97991e03f863a0c30c2cf029c",
-    "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa",
+    network.config.WETH,
+    network.config.DAI,
     1000000000000000,
     0
   );
