@@ -8,6 +8,13 @@ import "./interfaces/ICallee.sol";
 import "./interfaces/DydxFlashloanBase.sol";
 
 contract Arbitrage is ICallee, DydxFlashloanBase {
+    event arbitraged(   
+        address token1,
+        uint256 amountToken1,
+        address token2,
+        uint256 amountToken2
+    );
+
     address payable public owner;
     //0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
     IUniswapV2Router02 uniswap;
@@ -61,7 +68,7 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
         }
 
         uint256 balanceToken1 = IERC20(token1).balanceOf(address(this));
-        require(balanceToken1 >= repayAmount, "bal < repay");
+        require(balanceToken1 >= repayAmount - 2, "full balance not recieved");
 
         token1.approve(address(exchange1), balanceToken1);
 
@@ -99,6 +106,8 @@ contract Arbitrage is ICallee, DydxFlashloanBase {
         );
 
         token1.transfer(owner, token1.balanceOf(address(this)) - repayAmount);
+
+        emit arbitraged(address(token1), balanceToken1, address(token2), balanceToken2);
     }
 
     function initiateFlashLoan(
